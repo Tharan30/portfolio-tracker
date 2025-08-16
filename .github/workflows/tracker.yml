@@ -25,7 +25,7 @@ jobs:
           pip install yfinance pandas openpyxl
 
       - name: Run portfolio script
-        run: portfolio_tracker.py
+        run: python portfolio_tracker.py
 
       - name: Send email with portfolio.xlsx
         uses: dawidd6/action-send-mail@v3
