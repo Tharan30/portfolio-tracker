@@ -36,6 +36,7 @@ def get_prices_and_append(tickers, filename):
         df_combined = df_new
 
     # Save combined DataFrame to Excel with timestamp as index column
+    df_combined.index.name = "Date"
     df_combined.to_excel(filename)
 
     print(f"Prices updated and saved to {filename}")
@@ -44,3 +45,4 @@ if __name__ == "__main__":
     tickers = ['SUZLON.NS', 'ETERNAL.NS', 'TATAMOTORS.NS']  # Your portfolio tickers
     filename = "portfolio.xlsx"
     get_prices_and_append(tickers, filename)
+
