@@ -33,5 +33,6 @@ def append_to_excel(tickers, filename):
 
 if __name__ == "__main__":
     tickers = ["SUZLON.NS", "TATAMOTORS.NS", "ETERNAL.NS"]
-    filename = "portfolio-update.xlsx"
+    filename = "portfolio-changes.xlsx"
     append_to_excel(tickers, filename)
+
