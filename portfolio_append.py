@@ -15,18 +15,23 @@ def append_to_excel(tickers, filename):
     df = pd.DataFrame(data)
 
     if os.path.exists(filename):
-        # Open the existing workbook
-        with pd.ExcelWriter(filename, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
-            start_row = writer.sheets["Sheet1"].max_row  # find last row
-            df.to_excel(writer, sheet_name="Sheet1", startrow=start_row, header=False, index=False)
+        # Load workbook
+        book = load_workbook(filename)
+        writer = pd.ExcelWriter(filename, engine="openpyxl", mode="a", if_sheet_exists="overlay")
+        writer.book = book
+        if "Sheet1" in book.sheetnames:
+            sheet = book["Sheet1"]
+            start_row = sheet.max_row
+        else:
+            start_row = 0
+        df.to_excel(writer, sheet_name="Sheet1", startrow=start_row, header=False, index=False)
+        writer.close()
     else:
-        # Create a new file
+        # Create new file
         with pd.ExcelWriter(filename, engine="openpyxl") as writer:
             df.to_excel(writer, sheet_name="Sheet1", index=False)
 
 if __name__ == "__main__":
-    tickers = ["SUZLON.NS", "TATAMOTORS.NS", "ETERNAL.NS"]  # 🔧 your stock list
+    tickers = ["SUZLON.NS", "TATAMOTORS.NS", "ETERNAL.NS"]  # NSE tickers
     filename = "portfolio-update.xlsx"
     append_to_excel(tickers, filename)
-
-
