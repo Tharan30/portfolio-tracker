@@ -1,8 +1,8 @@
 import yfinance as yf
 import pandas as pd
+from openpyxl import load_workbook, Workbook
 import os
 from datetime import datetime
-from openpyxl import load_workbook
 
 def append_to_excel(tickers, filename):
     today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -15,19 +15,19 @@ def append_to_excel(tickers, filename):
             last_price = info["Close"].iloc[-1]
             prices[ticker] = last_price
 
-    # Create row as DataFrame
+    # Create one row with Date + tickers
     df = pd.DataFrame([{ "Date": today, **prices }])
 
     if os.path.exists(filename):
         book = load_workbook(filename)
         sheet = book.active
-        start_row = sheet.max_row + 1   # append after last row
+        start_row = sheet.max_row + 1
 
-        with pd.ExcelWriter(filename, engine="openpyxl", mode="a") as writer:
-            writer.book = book
-            writer.sheets = {ws.title: ws for ws in book.worksheets}
-            df.to_excel(writer, sheet_name="Sheet1", startrow=start_row-1, header=False, index=False)
+        for r in df.itertuples(index=False, name=None):
+            sheet.append(r)   # ✅ appends row at bottom
+        book.save(filename)
     else:
+        # Create new workbook
         with pd.ExcelWriter(filename, engine="openpyxl") as writer:
             df.to_excel(writer, sheet_name="Sheet1", index=False)
 
