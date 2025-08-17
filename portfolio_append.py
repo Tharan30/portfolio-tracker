@@ -25,7 +25,8 @@ def append_to_excel(tickers, filename):
             df.to_excel(writer, sheet_name="Sheet1", index=False)
 
 if __name__ == "__main__":
-    tickers = ["SUZLON.NS", "TATAMOTORS.NS", "ETERNAL.NS"  # 🔧 your stock list
+    tickers = ["SUZLON.NS", "TATAMOTORS.NS", "ETERNAL.NS"]  # 🔧 your stock list
     filename = "portfolio-update.xlsx"
     append_to_excel(tickers, filename)
+
 
