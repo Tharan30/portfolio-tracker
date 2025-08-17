@@ -44,15 +44,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Send email with portfolio.xlsx
+      - name: Send email with portfolio-update.xlsx
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 587
           username: ${{ vars.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
-          subject: "Daily Portfolio Update"
+          subject: "Tharaneesh's Portfolio Update"
           to: ${{ vars.EMAIL_USER }}
           from: ${{ vars.EMAIL_USER }}
           body: "Attached is your daily portfolio update."
-          attachments: portfolio.xlsx
+          attachments: portfolio-update.xlsx
