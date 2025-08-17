@@ -55,4 +55,4 @@ jobs:
           to: ${{ vars.EMAIL_USER }}
           from: ${{ vars.EMAIL_USER }}
           body: "Attached is your daily portfolio update."
-          attachments: portfolio-update.xlsx
+          attachments: portfolio-changes.xlsx
