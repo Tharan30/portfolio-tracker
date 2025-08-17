@@ -1,48 +1,40 @@
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
-import os
 from openpyxl import load_workbook
 
 def get_price(ticker):
     data = yf.download(ticker, period="1d", interval="1d", progress=False, auto_adjust=True)['Close']
     if not data.empty:
-        return float(data.iloc[0].item())  # Fix warning by using .item()
+        return float(data.iloc[0].item())
     return None
 
-def get_prices_and_append(tickers, filename):
+def append_to_excel(tickers, filename):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    # Fetch prices in a dict with ticker as key
-    prices = {}
-    for ticker in tickers:
-        price = get_price(ticker)
-        prices[ticker] = price
+    # Fetch prices
+    prices = {ticker: get_price(ticker) for ticker in tickers}
+    row = [now] + list(prices.values())
 
-    # Convert dict to DataFrame with timestamp as index
-    df_new = pd.DataFrame(prices, index=[now])
+    try:
+        # Try to load existing workbook
+        book = load_workbook(filename)
+        writer = pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay')
+        writer.book = book
 
-    if os.path.exists(filename):
-        try:
-            # Load existing file into DataFrame
-            df_existing = pd.read_excel(filename, index_col=0)
-            # Append new row
-            df_combined = pd.concat([df_existing, df_new])
-        except Exception:
-            # If file corrupted or unreadable, overwrite
-            df_combined = df_new
-    else:
-        # If file does not exist, create new
-        df_combined = df_new
+        # Write as new row without deleting old data
+        df_new = pd.DataFrame([row], columns=["Date"] + tickers)
+        df_new.to_excel(writer, sheet_name="Sheet1", index=False, header=False, startrow=book.active.max_row)
+        writer.close()
 
-    # Save combined DataFrame to Excel with timestamp as index column
-    df_combined.index.name = "Date"
-    df_combined.to_excel(filename)
+    except FileNotFoundError:
+        # If file doesn't exist, create with header
+        df_new = pd.DataFrame([row], columns=["Date"] + tickers)
+        df_new.to_excel(filename, index=False)
 
-    print(f"Prices updated and saved to {filename}")
+    print(f"Row appended to {filename}")
 
 if __name__ == "__main__":
-    tickers = ['SUZLON.NS', 'ETERNAL.NS', 'TATAMOTORS.NS']  # Your portfolio tickers
+    tickers = ['SUZLON.NS', 'ETERNAL.NS', 'TATAMOTORS.NS']
     filename = "portfolio.xlsx"
-    get_prices_and_append(tickers, filename)
-
+    append_to_excel(tickers, filename)
